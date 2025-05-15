@@ -1,8 +1,8 @@
-<<<<<<< HEAD
 const express = require("express");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const path = require("path");
+
 const app = express();
 const PORT = process.env.PORT || 3000;  // Use environment port or 3000 locally
 
@@ -33,18 +33,30 @@ function saveUsers(users) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(users, null, 2), "utf-8");
 }
 
-// Save login info
+// Save login info (handles username and password from form)
 app.post("/save", (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) return res.status(400).send("Missing fields");
+  const { username, phone, email, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).send("Missing required fields: username and password");
+  }
 
   const users = readUsers();
-  users.push({ username, password, time: new Date().toISOString() });
+
+  const newUser = {
+    username,
+    phone: phone || "",
+    email: email || "",
+    password,
+    timestamp: new Date().toISOString(),
+  };
+
+  users.push(newUser);
   saveUsers(users);
-  res.send("Saved successfully!");
+  res.send("User information saved successfully!");
 });
 
-// View saved info (basic auth)
+// View saved user data (with basic auth)
 app.get("/saved", (req, res) => {
   const auth = req.headers.authorization || "";
   const [user, pass] = Buffer.from(auth.split(" ")[1] || "", "base64")
@@ -57,64 +69,9 @@ app.get("/saved", (req, res) => {
   } else {
     res.set("WWW-Authenticate", 'Basic realm="Restricted Area"');
     res.status(401).send("Authentication required");
-=======
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const bodyParser = require('body-parser');
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
-
-// Save user data to file
-app.post('/submit', (req, res) => {
-  const { username, phone, email, password } = req.body;
-
-  const newUser = {
-    username,
-    phone,
-    email,
-    password,
-    timestamp: new Date().toISOString()
-  };
-
-  const filePath = path.join(__dirname, 'savedUsers.json');
-
-  let users = [];
-  if (fs.existsSync(filePath)) {
-    users = JSON.parse(fs.readFileSync(filePath));
-  }
-
-  users.push(newUser);
-  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
-
-  res.send('✅ User information saved successfully!');
-});
-
-// View saved user data
-app.get('/view', (req, res) => {
-  const filePath = path.join(__dirname, 'savedUsers.json');
-
-  if (fs.existsSync(filePath)) {
-    const users = JSON.parse(fs.readFileSync(filePath));
-    res.json(users);
-  } else {
-    res.json([]);
->>>>>>> 89dc140 (Update index.html inside public folder)
   }
 });
 
 app.listen(PORT, () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
   console.log(`✅ Server running at http://localhost:${PORT}`);
-=======
-  console.log(`Server running on http://localhost:${PORT}`);
->>>>>>> 89dc140 (Update index.html inside public folder)
-=======
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
->>>>>>> ff6a848 (Fixed form action and added email/phone inputs)
 });
