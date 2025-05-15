@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const express = require("express");
 const bodyParser = require("body-parser");
 const fs = require("fs");
@@ -56,9 +57,60 @@ app.get("/saved", (req, res) => {
   } else {
     res.set("WWW-Authenticate", 'Basic realm="Restricted Area"');
     res.status(401).send("Authentication required");
+=======
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = 3000;
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+// Save user data to file
+app.post('/submit', (req, res) => {
+  const { username, phone, email, password } = req.body;
+
+  const newUser = {
+    username,
+    phone,
+    email,
+    password,
+    timestamp: new Date().toISOString()
+  };
+
+  const filePath = path.join(__dirname, 'savedUsers.json');
+
+  let users = [];
+  if (fs.existsSync(filePath)) {
+    users = JSON.parse(fs.readFileSync(filePath));
+  }
+
+  users.push(newUser);
+  fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
+
+  res.send('User information saved successfully!');
+});
+
+// View saved user data
+app.get('/view', (req, res) => {
+  const filePath = path.join(__dirname, 'savedUsers.json');
+
+  if (fs.existsSync(filePath)) {
+    const users = JSON.parse(fs.readFileSync(filePath));
+    res.json(users);
+  } else {
+    res.json([]);
+>>>>>>> 89dc140 (Update index.html inside public folder)
   }
 });
 
 app.listen(PORT, () => {
+<<<<<<< HEAD
   console.log(`✅ Server running at http://localhost:${PORT}`);
+=======
+  console.log(`Server running on http://localhost:${PORT}`);
+>>>>>>> 89dc140 (Update index.html inside public folder)
 });
