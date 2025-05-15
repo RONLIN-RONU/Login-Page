@@ -64,7 +64,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -91,7 +91,7 @@ app.post('/submit', (req, res) => {
   users.push(newUser);
   fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
 
-  res.send('User information saved successfully!');
+  res.send('✅ User information saved successfully!');
 });
 
 // View saved user data
@@ -109,8 +109,12 @@ app.get('/view', (req, res) => {
 
 app.listen(PORT, () => {
 <<<<<<< HEAD
+<<<<<<< HEAD
   console.log(`✅ Server running at http://localhost:${PORT}`);
 =======
   console.log(`Server running on http://localhost:${PORT}`);
 >>>>>>> 89dc140 (Update index.html inside public folder)
+=======
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+>>>>>>> ff6a848 (Fixed form action and added email/phone inputs)
 });
